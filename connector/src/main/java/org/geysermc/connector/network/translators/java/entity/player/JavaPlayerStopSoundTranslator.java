@@ -20,12 +20,12 @@ public class JavaPlayerStopSoundTranslator extends PacketTranslator<ServerStopSo
         } else if(packet.getSound() instanceof CustomSound) {
             packetSound = ((CustomSound) packet.getSound()).getName();
         } else {
-            session.getConnector().getLogger().debug("Unknown sound packet, we were unable to map this. " + packet.toString());
+            session.getConnector().getLogger().info("Unknown sound packet, we were unable to map this. " + packet.toString());
             return;
         }
         SoundMap.SoundMapping soundMapping = SoundMap.get().fromJava(packetSound);
         session.getConnector().getLogger()
-                .debug("[StopSound] Sound mapping " + packetSound + " -> "
+                .info("[StopSound] Sound mapping " + packetSound + " -> "
                         + soundMapping + (soundMapping == null ? "[not found]" : "")
                         + " - " + packet.toString());
         String playsound;
