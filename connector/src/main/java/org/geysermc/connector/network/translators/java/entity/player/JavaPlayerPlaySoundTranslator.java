@@ -38,6 +38,9 @@ public class JavaPlayerPlaySoundTranslator extends PacketTranslator<ServerPlaySo
         if(soundMapping == null || soundMapping.getPlaysound() == null) {
             // no mapping
             session.getConnector().getLogger()
+                    .info("[PlaySound] Sound mapping " + packetSound + " -> "
+                            + soundMapping + "[not found] - " + packet.toString());
+            session.getConnector().getLogger()
                     .debug("[PlaySound] Defaulting to sound server gave us.");
             playsound = packetSound;
         } else {

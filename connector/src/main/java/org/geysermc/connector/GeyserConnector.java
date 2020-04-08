@@ -99,6 +99,10 @@ public class GeyserConnector {
         logger.info("");
         logger.info("******************************************");
 
+        logger.info("Thank you for testing this prerelease of effect and sound handling!");
+        logger.info("Please let the developers know if there are any missing sounds or effects - you should get a log here that you should forward to them."));
+        logger.info("Some effects done by Bedrock players - such as breaking blocks in creative or opening a door - do not work when done in Bedrock. This is a known bug.");
+
         this.generalThreadPool = Executors.newScheduledThreadPool(config.getGeneralThreadPool());
 
         logger.setDebug(config.isDebugMode());

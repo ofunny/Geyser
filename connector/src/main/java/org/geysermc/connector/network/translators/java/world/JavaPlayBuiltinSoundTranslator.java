@@ -18,10 +18,12 @@ public class JavaPlayBuiltinSoundTranslator extends PacketTranslator<ServerPlayB
 
         SoundMap.SoundMapping soundMapping = SoundMap.get().fromJava(packetSound);
         session.getConnector().getLogger()
-                .info("[Builtin] Sound mapping " + packetSound + " -> "
+                .debug("[Builtin] Sound mapping " + packetSound + " -> "
                         + soundMapping + (soundMapping == null ? "[not found]" : "")
                         + " - " + packet.toString());
         if(soundMapping == null) {
+            session.getConnector().getLogger()
+                    .info("[Builtin] Sound mapping " + packetSound + " [not found] - " + packet.toString());
             return;
         }
 

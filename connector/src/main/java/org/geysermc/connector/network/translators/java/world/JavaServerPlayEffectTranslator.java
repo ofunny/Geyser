@@ -82,7 +82,8 @@ public class JavaServerPlayEffectTranslator extends PacketTranslator<ServerPlayE
                         effect.setType(LevelEventType.PARTICLE_SMOKE);
                         break;
                     default:
-                        GeyserConnector.getInstance().getLogger().debug("No effect handling for particle effect: " + packet.getEffect());
+                        GeyserConnector.getInstance().getLogger().info("No effect handling for particle effect: " + packet.getEffect()
+                                + ", any extra data: " + packet.getData());
                 }
             }
             effect.setPosition(Vector3f.from(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ()));
@@ -110,7 +111,7 @@ public class JavaServerPlayEffectTranslator extends PacketTranslator<ServerPlayE
                     session.getUpstream().sendPacket(soundEvent);
                 }
             } else {
-                GeyserConnector.getInstance().getLogger().debug("No effect handling for sound effect: " + packet.getEffect());
+                GeyserConnector.getInstance().getLogger().info("No effect handling for sound effect: " + packet.getEffect() + ", any extra data: " + packet.getData());
             }
         }
         if (effect.getType() != null) {

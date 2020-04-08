@@ -25,12 +25,15 @@ public class JavaPlayerStopSoundTranslator extends PacketTranslator<ServerStopSo
         }
         SoundMap.SoundMapping soundMapping = SoundMap.get().fromJava(packetSound);
         session.getConnector().getLogger()
-                .info("[StopSound] Sound mapping " + packetSound + " -> "
+                .debug("[StopSound] Sound mapping " + packetSound + " -> "
                         + soundMapping + (soundMapping == null ? "[not found]" : "")
                         + " - " + packet.toString());
         String playsound;
         if(soundMapping == null || soundMapping.getPlaysound() == null) {
             // no mapping
+            session.getConnector().getLogger()
+                    .info("[StopSound] Sound mapping " + packetSound + " -> "
+                            + soundMapping + "[not found] - " + packet.toString());
             session.getConnector().getLogger()
                     .debug("[StopSound] Defaulting to sound server gave us.");
             playsound = packetSound;
