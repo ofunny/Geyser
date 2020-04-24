@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 GeyserMC. http://geysermc.org
+ * Copyright (c) 2019-2020 GeyserMC. http://geysermc.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,14 +27,18 @@ package org.geysermc.platform.bukkit;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.common.PlatformType;
+import org.geysermc.common.command.ICommandManager;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.common.bootstrap.IGeyserBootstrap;
+import org.geysermc.connector.command.CommandManager;
 import org.geysermc.platform.bukkit.command.GeyserBukkitCommandExecutor;
+import org.geysermc.platform.bukkit.command.GeyserBukkitCommandManager;
 
 import java.util.UUID;
 
 public class GeyserBukkitPlugin extends JavaPlugin implements IGeyserBootstrap {
 
+    private GeyserBukkitCommandManager geyserCommandManager;
     private GeyserBukkitConfiguration geyserConfig;
     private GeyserBukkitLogger geyserLogger;
 
@@ -53,6 +57,8 @@ public class GeyserBukkitPlugin extends JavaPlugin implements IGeyserBootstrap {
         this.geyserLogger = new GeyserBukkitLogger(getLogger(), geyserConfig.isDebugMode());
         this.connector = GeyserConnector.start(PlatformType.BUKKIT, this);
 
+        this.geyserCommandManager = new GeyserBukkitCommandManager(this, connector);
+
         this.getCommand("geyser").setExecutor(new GeyserBukkitCommandExecutor(connector));
     }
 
@@ -69,5 +75,10 @@ public class GeyserBukkitPlugin extends JavaPlugin implements IGeyserBootstrap {
     @Override
     public GeyserBukkitLogger getGeyserLogger() {
         return geyserLogger;
+    }
+
+    @Override
+    public CommandManager getGeyserCommandManager() {
+        return this.geyserCommandManager;
     }
 }

@@ -125,6 +125,7 @@ public class BedrockActionTranslator extends PacketTranslator<PlayerActionPacket
                     spawnPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
                     session.getUpstream().sendPacket(spawnPacket);
                     entity.updateBedrockAttributes(session);
+                    session.getEntityCache().updateBossBars();
                 }
                 break;
             case JUMP:

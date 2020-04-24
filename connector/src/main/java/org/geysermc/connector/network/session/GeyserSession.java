@@ -44,7 +44,13 @@ import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.tag.CompoundTag;
 import com.nukkitx.protocol.bedrock.BedrockServerSession;
+import com.nukkitx.protocol.bedrock.data.ContainerId;
 import com.nukkitx.protocol.bedrock.data.GamePublishSetting;
+import com.nukkitx.protocol.bedrock.packet.AvailableEntityIdentifiersPacket;
+import com.nukkitx.protocol.bedrock.packet.BiomeDefinitionListPacket;
+import com.nukkitx.protocol.bedrock.packet.PlayStatusPacket;
+import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
+import com.nukkitx.protocol.bedrock.packet.TextPacket;
 import com.nukkitx.protocol.bedrock.data.GameRuleData;
 import com.nukkitx.protocol.bedrock.data.PlayerPermission;
 import com.nukkitx.protocol.bedrock.packet.*;
@@ -125,6 +131,9 @@ public class GeyserSession implements CommandSender {
     private boolean manyDimPackets = false;
     private ServerRespawnPacket lastDimPacket = null;
 
+    @Setter
+    private int craftSlot = 0;
+
     public GeyserSession(GeyserConnector connector, BedrockServerSession bedrockServerSession) {
         this.connector = connector;
         this.upstream = new UpstreamSession(bedrockServerSession);
@@ -149,15 +158,6 @@ public class GeyserSession implements CommandSender {
     public void connect(RemoteServer remoteServer) {
         startGame();
         this.remoteServer = remoteServer;
-        if (connector.getAuthType() != AuthType.ONLINE) {
-            connector.getLogger().info(
-                    "Attempting to login using " + connector.getAuthType().name().toLowerCase() + " mode... " +
-                    (connector.getAuthType() == AuthType.OFFLINE ?
-                            "authentication is disabled." : "authentication will be encrypted"
-                    )
-            );
-            authenticate(authData.getName());
-        }
 
         ChunkUtils.sendEmptyChunks(this, playerEntity.getPosition().toInt(), 0, false);
 
@@ -169,9 +169,26 @@ public class GeyserSession implements CommandSender {
         entityPacket.setTag(CompoundTag.EMPTY);
         upstream.sendPacket(entityPacket);
 
+        InventoryContentPacket creativePacket = new InventoryContentPacket();
+        creativePacket.setContainerId(ContainerId.CREATIVE);
+        creativePacket.setContents(Toolbox.CREATIVE_ITEMS);
+        upstream.sendPacket(creativePacket);
+
         PlayStatusPacket playStatusPacket = new PlayStatusPacket();
         playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
         upstream.sendPacket(playStatusPacket);
+    }
+
+    public void login() {
+        if (connector.getAuthType() != AuthType.ONLINE) {
+            connector.getLogger().info(
+                    "Attempting to login using " + connector.getAuthType().name().toLowerCase() + " mode... " +
+                            (connector.getAuthType() == AuthType.OFFLINE ?
+                                    "authentication is disabled." : "authentication will be encrypted"
+                            )
+            );
+            authenticate(authData.getName());
+        }
     }
 
     public void authenticate(String username) {
@@ -184,7 +201,7 @@ public class GeyserSession implements CommandSender {
             return;
         }
 
-        loggedIn = true;
+        loggingIn = true;
         // new thread so clients don't timeout
         new Thread(() -> {
             try {
@@ -271,6 +288,9 @@ public class GeyserSession implements CommandSender {
                         loggingIn = false;
                         loggedIn = false;
                         connector.getLogger().info(authData.getName() + " has disconnected from remote java server on address " + remoteServer.getAddress() + " because of " + event.getReason());
+                        if (event.getCause() != null) {
+                            event.getCause().printStackTrace();
+                        }
                         upstream.disconnect(event.getReason());
                     }
 
@@ -294,7 +314,7 @@ public class GeyserSession implements CommandSender {
 
                 downstream.getSession().connect();
                 connector.addPlayer(this);
-            } catch (InvalidCredentialsException e) {
+            } catch (InvalidCredentialsException | IllegalArgumentException e) {
                 connector.getLogger().info("User '" + username + "' entered invalid login info, kicking.");
                 disconnect("Invalid/incorrect login info");
             } catch (RequestException ex) {
