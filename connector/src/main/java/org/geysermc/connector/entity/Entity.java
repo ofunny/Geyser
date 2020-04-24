@@ -27,6 +27,7 @@ package org.geysermc.connector.entity;
 
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.EntityMetadata;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
+import com.github.steveice10.mc.protocol.data.game.entity.metadata.Pose;
 import com.github.steveice10.mc.protocol.data.message.TextMessage;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.EntityData;
@@ -187,6 +188,7 @@ public class Entity {
     }
 
     public void updateBedrockMetadata(EntityMetadata entityMetadata, GeyserSession session) {
+        System.out.println(entityMetadata.getId() + " " + entityMetadata.getType() + " " + entityMetadata.getValue());
         switch (entityMetadata.getId()) {
             case 0:
                 if (entityMetadata.getType() == MetadataType.BYTE) {
@@ -217,6 +219,13 @@ public class Entity {
                 break;
             case 5: // no gravity
                 metadata.getFlags().setFlag(EntityFlag.HAS_GRAVITY, !(boolean) entityMetadata.getValue());
+                break;
+            case 6: //Sleep
+                if (entityMetadata.getValue().equals(Pose.SLEEPING)) {
+                    metadata.put(EntityData.BED_RESPAWN_POS, position);
+                    metadata.getFlags().setFlag(EntityFlag.SLEEPING, (entityMetadata.getValue().equals(Pose.SLEEPING)));
+                    //Might need to send a custom packet to the Bedrock Client since Java has no enter bed packet
+                 }
                 break;
         }
 
