@@ -30,10 +30,8 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.MetadataType;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.Pose;
 import com.github.steveice10.mc.protocol.data.message.TextMessage;
 import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.data.EntityData;
-import com.nukkitx.protocol.bedrock.data.EntityDataMap;
-import com.nukkitx.protocol.bedrock.data.EntityFlag;
-import com.nukkitx.protocol.bedrock.data.EntityFlags;
+import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.protocol.bedrock.data.*;
 import com.nukkitx.protocol.bedrock.packet.*;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -46,6 +44,7 @@ import org.geysermc.connector.entity.attribute.Attribute;
 import org.geysermc.connector.entity.attribute.AttributeType;
 import org.geysermc.connector.entity.type.EntityType;
 import org.geysermc.connector.network.session.GeyserSession;
+import org.geysermc.connector.network.translators.bedrock.BedrockActionTranslator;
 import org.geysermc.connector.utils.AttributeUtils;
 import org.geysermc.connector.utils.MessageUtils;
 
@@ -95,6 +94,8 @@ public class Entity {
         metadata.put(EntityData.LEAD_HOLDER_EID, -1L);
         metadata.put(EntityData.BOUNDING_BOX_HEIGHT, entityType.getHeight());
         metadata.put(EntityData.BOUNDING_BOX_WIDTH, entityType.getWidth());
+        metadata.put(EntityData.CAN_START_SLEEP, 0);
+        metadata.put(EntityData.BED_RESPAWN_POS, Vector3i.ZERO);
         EntityFlags flags = new EntityFlags();
         flags.setFlag(EntityFlag.HAS_GRAVITY, true);
         flags.setFlag(EntityFlag.HAS_COLLISION, true);
@@ -191,7 +192,7 @@ public class Entity {
     }
 
     public void updateBedrockMetadata(EntityMetadata entityMetadata, GeyserSession session) {
-        System.out.println(entityMetadata.getId() + " " + entityMetadata.getType() + " " + entityMetadata.getValue());
+        //System.out.println(entityMetadata.getId() + " " + entityMetadata.getType() + " " + entityMetadata.getValue());
         switch (entityMetadata.getId()) {
             case 0:
                 if (entityMetadata.getType() == MetadataType.BYTE) {
@@ -225,10 +226,43 @@ public class Entity {
                 break;
             case 6: //Sleep
                 if (entityMetadata.getValue().equals(Pose.SLEEPING)) {
-                    metadata.put(EntityData.BED_RESPAWN_POS, position);
-                    metadata.getFlags().setFlag(EntityFlag.SLEEPING, (entityMetadata.getValue().equals(Pose.SLEEPING)));
+
+                    LevelEventPacket levelEventPacket = new LevelEventPacket();
+                    levelEventPacket.setData(0);
+                    levelEventPacket.setPosition(Vector3f.ZERO);
+                    levelEventPacket.setType(LevelEventType.PLAYERS_SLEEPING);
+                    session.getUpstream().sendPacket(levelEventPacket);
+
+//                    SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
+//                    setEntityDataPacket.getMetadata().put(EntityData.CAN_START_SLEEP, 2);
+//                    setEntityDataPacket.getMetadata().put(EntityData.BOUNDING_BOX_WIDTH, 0.2f);
+//                    setEntityDataPacket.getMetadata().put(EntityData.BOUNDING_BOX_HEIGHT, 0.2f);
+//                    setEntityDataPacket.getMetadata().putFlags(new EntityFlags());
+//                    setEntityDataPacket.getMetadata().getFlags().setFlag(EntityFlag.SLEEPING, true);
+//                    setEntityDataPacket.setRuntimeEntityId(geyserId);
+//                    session.getUpstream().sendPacket(setEntityDataPacket);
+//
+//                    PlayerActionPacket actionPacket = new PlayerActionPacket();
+//                    actionPacket.setAction(PlayerActionPacket.Action.START_SLEEP);
+//                    actionPacket.setBlockPosition(Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ()));
+//                    actionPacket.setFace(1);
+//                    actionPacket.setRuntimeEntityId(geyserId);
+//                    session.getUpstream().sendPacket(actionPacket);
+//                    metadata.clear();
+//                    metadata.putFlags(new EntityFlags());
+                    metadata.getFlags().setFlag(EntityFlag.SLEEPING, true);
+                    metadata.put(EntityData.CAN_START_SLEEP, 2);
+                    //metadata.put(EntityData.BED_RESPAWN_POS, Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ()));
+                    metadata.put(EntityData.BOUNDING_BOX_WIDTH, 0.2f);
+                    metadata.put(EntityData.BOUNDING_BOX_HEIGHT, 0.2f);
+                    System.out.println(metadata.toString());
                     //Might need to send a custom packet to the Bedrock Client since Java has no enter bed packet
-                 }
+                 } else if (metadata.getFlags().getFlag(EntityFlag.SLEEPING)) {
+                    metadata.getFlags().setFlag(EntityFlag.SLEEPING, false);
+                    metadata.put(EntityData.BOUNDING_BOX_WIDTH, getEntityType().getWidth());
+                    metadata.put(EntityData.BOUNDING_BOX_HEIGHT, getEntityType().getHeight());
+                    metadata.put(EntityData.CAN_START_SLEEP, 0);
+                }
                 break;
         }
 

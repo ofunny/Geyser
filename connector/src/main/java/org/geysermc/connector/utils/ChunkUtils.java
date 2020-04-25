@@ -42,6 +42,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.network.session.GeyserSession;
+import org.geysermc.connector.network.translators.block.BlockStateValues;
 import org.geysermc.connector.network.translators.block.entity.*;
 import org.geysermc.connector.network.translators.Translators;
 import org.geysermc.connector.network.translators.block.BlockTranslator;
@@ -156,7 +157,11 @@ public class ChunkUtils {
         updateBlockPacket.setDataLayer(0);
         updateBlockPacket.setBlockPosition(position);
         updateBlockPacket.setRuntimeId(blockId);
-        updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
+        if (BlockStateValues.getBedColor(blockState) != -1) {
+            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
+        } else {
+            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NEIGHBORS);
+        }
         session.getUpstream().sendPacket(updateBlockPacket);
 
         UpdateBlockPacket waterPacket = new UpdateBlockPacket();
