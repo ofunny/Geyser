@@ -44,7 +44,6 @@ import org.geysermc.connector.entity.attribute.Attribute;
 import org.geysermc.connector.entity.attribute.AttributeType;
 import org.geysermc.connector.entity.type.EntityType;
 import org.geysermc.connector.network.session.GeyserSession;
-import org.geysermc.connector.network.translators.bedrock.BedrockActionTranslator;
 import org.geysermc.connector.utils.AttributeUtils;
 import org.geysermc.connector.utils.MessageUtils;
 
@@ -102,6 +101,7 @@ public class Entity {
         flags.setFlag(EntityFlag.CAN_SHOW_NAME, true);
         flags.setFlag(EntityFlag.CAN_CLIMB, true);
         metadata.putFlags(flags);
+        System.out.println(metadata.toString());
     }
 
     public void spawnEntity(GeyserSession session) {
@@ -239,6 +239,7 @@ public class Entity {
 //                    setEntityDataPacket.getMetadata().put(EntityData.BOUNDING_BOX_HEIGHT, 0.2f);
 //                    setEntityDataPacket.getMetadata().putFlags(new EntityFlags());
 //                    setEntityDataPacket.getMetadata().getFlags().setFlag(EntityFlag.SLEEPING, true);
+//                    System.out.println(setEntityDataPacket.getMetadata().toString());
 //                    setEntityDataPacket.setRuntimeEntityId(geyserId);
 //                    session.getUpstream().sendPacket(setEntityDataPacket);
 //
@@ -248,17 +249,18 @@ public class Entity {
 //                    actionPacket.setFace(1);
 //                    actionPacket.setRuntimeEntityId(geyserId);
 //                    session.getUpstream().sendPacket(actionPacket);
-//                    metadata.clear();
-//                    metadata.putFlags(new EntityFlags());
+
                     metadata.getFlags().setFlag(EntityFlag.SLEEPING, true);
+                    metadata.getFlags().setFlag(EntityFlag.POSE_CHANGE, true);
                     metadata.put(EntityData.CAN_START_SLEEP, 2);
-                    //metadata.put(EntityData.BED_RESPAWN_POS, Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ()));
+                    metadata.put(EntityData.BED_RESPAWN_POS, Vector3i.from(position.getFloorX(), position.getFloorY() + 1, position.getFloorZ()));
                     metadata.put(EntityData.BOUNDING_BOX_WIDTH, 0.2f);
                     metadata.put(EntityData.BOUNDING_BOX_HEIGHT, 0.2f);
-                    System.out.println(metadata.toString());
+                    //System.out.println(metadata.toString());
                     //Might need to send a custom packet to the Bedrock Client since Java has no enter bed packet
                  } else if (metadata.getFlags().getFlag(EntityFlag.SLEEPING)) {
                     metadata.getFlags().setFlag(EntityFlag.SLEEPING, false);
+                    metadata.getFlags().setFlag(EntityFlag.POSE_CHANGE, true);
                     metadata.put(EntityData.BOUNDING_BOX_WIDTH, getEntityType().getWidth());
                     metadata.put(EntityData.BOUNDING_BOX_HEIGHT, getEntityType().getHeight());
                     metadata.put(EntityData.CAN_START_SLEEP, 0);
