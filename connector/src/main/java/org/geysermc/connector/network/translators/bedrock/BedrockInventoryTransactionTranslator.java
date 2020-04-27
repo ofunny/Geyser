@@ -102,7 +102,6 @@ public class BedrockInventoryTransactionTranslator extends PacketTranslator<Inve
                 Entity entity = session.getEntityCache().getEntityByGeyserId(packet.getRuntimeEntityId());
                 if (entity == null)
                     return;
-
                 //https://wiki.vg/Protocol#Interact_Entity
                 switch (packet.getActionType()) {
                     case 0: //Interact
