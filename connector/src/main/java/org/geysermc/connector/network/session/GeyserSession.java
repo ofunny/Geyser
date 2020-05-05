@@ -70,7 +70,14 @@ import org.geysermc.connector.network.translators.EntityIdentifierRegistry;
 import org.geysermc.connector.network.translators.PacketTranslatorRegistry;
 import org.geysermc.connector.network.translators.item.ItemRegistry;
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
+<<<<<<< HEAD
 import org.geysermc.connector.utils.*;
+=======
+import org.geysermc.connector.utils.ChunkUtils;
+import org.geysermc.connector.utils.LocaleUtils;
+import org.geysermc.connector.utils.Toolbox;
+import org.geysermc.connector.world.WorldBorder;
+>>>>>>> 50c4c0b2... Initial world border
 import org.geysermc.floodgate.util.BedrockData;
 import org.geysermc.floodgate.util.EncryptionUtil;
 
@@ -190,6 +197,9 @@ public class GeyserSession implements CommandSender {
     private long lastHitTime;
 
     private MinecraftProtocol protocol;
+
+    @Setter
+    private WorldBorder worldBorder; // Im just going to shove this here until i move some stuff around
 
     public GeyserSession(GeyserConnector connector, BedrockServerSession bedrockServerSession) {
         this.connector = connector;
@@ -465,6 +475,17 @@ public class GeyserSession implements CommandSender {
         textPacket.setMessage(message);
 
         upstream.sendPacket(textPacket);
+    }
+
+    public void sendActionBar(String text) {
+        SetTitlePacket setTitlePacket = new SetTitlePacket();
+        setTitlePacket.setType(SetTitlePacket.Type.SET_ACTIONBAR_MESSAGE);
+        setTitlePacket.setText(text);
+        setTitlePacket.setFadeInTime(0);
+        setTitlePacket.setStayTime(0);
+        setTitlePacket.setFadeOutTime(0);
+
+        upstream.sendPacket(setTitlePacket);
     }
 
     @Override
