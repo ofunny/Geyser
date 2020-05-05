@@ -69,15 +69,9 @@ import org.geysermc.connector.network.translators.BiomeTranslator;
 import org.geysermc.connector.network.translators.EntityIdentifierRegistry;
 import org.geysermc.connector.network.translators.PacketTranslatorRegistry;
 import org.geysermc.connector.network.translators.item.ItemRegistry;
+import org.geysermc.connector.network.translators.world.WorldBorder;
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
-<<<<<<< HEAD
 import org.geysermc.connector.utils.*;
-=======
-import org.geysermc.connector.utils.ChunkUtils;
-import org.geysermc.connector.utils.LocaleUtils;
-import org.geysermc.connector.utils.Toolbox;
-import org.geysermc.connector.world.WorldBorder;
->>>>>>> 50c4c0b2... Initial world border
 import org.geysermc.floodgate.util.BedrockData;
 import org.geysermc.floodgate.util.EncryptionUtil;
 
@@ -479,7 +473,7 @@ public class GeyserSession implements CommandSender {
 
     public void sendActionBar(String text) {
         SetTitlePacket setTitlePacket = new SetTitlePacket();
-        setTitlePacket.setType(SetTitlePacket.Type.SET_ACTIONBAR_MESSAGE);
+        setTitlePacket.setType(SetTitlePacket.Type.ACTIONBAR);
         setTitlePacket.setText(text);
         setTitlePacket.setFadeInTime(0);
         setTitlePacket.setStayTime(0);
