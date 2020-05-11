@@ -101,6 +101,7 @@ public class BedrockActionTranslator extends PacketTranslator<PlayerActionPacket
                 System.out.println("START_SLEEP");
                 break;
             case STOP_SLEEP:
+                System.out.println("STOP_SLEEP");
                 ClientPlayerStatePacket stopSleepingPacket = new ClientPlayerStatePacket((int) entity.getEntityId(), PlayerState.LEAVE_BED);
                 session.getDownstream().getSession().send(stopSleepingPacket);
                 break;
