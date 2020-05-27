@@ -169,7 +169,7 @@ public class GeyserSession implements CommandSender {
 
     private MinecraftProtocol protocol;
 
-    private final EntityType testingEntityType = EntityType.BOAT;
+    private final EntityType testingEntityType = EntityType.COW;
 
     public GeyserSession(GeyserConnector connector, BedrockServerSession bedrockServerSession) {
         this.connector = connector;

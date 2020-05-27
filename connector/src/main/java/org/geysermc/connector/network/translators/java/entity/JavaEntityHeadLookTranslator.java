@@ -49,14 +49,10 @@ public class JavaEntityHeadLookTranslator extends PacketTranslator<ServerEntityH
         if (entity == null) return;
 
         if (entity.getEntityType() == session.getTestingEntityType()) System.out.println(getClass().getName());
-        entity.setRotation(Vector3f.from(entity.getRotation().getX(), entity.getRotation().getY(), packet.getHeadYaw()));
+        entity.setRotation(Vector3f.from(packet.getHeadYaw(), entity.getRotation().getY(), 0));
 
         if (entity.getEntityType() != EntityType.PLAYER && entity.getEntityType() != EntityType.PAINTING) {
-            MoveEntityAbsolutePacket moveEntityAbsolutePacket = new MoveEntityAbsolutePacket();
-            moveEntityAbsolutePacket.setRuntimeEntityId(entity.getGeyserId());
-            moveEntityAbsolutePacket.setPosition(entity.getPosition());
-            moveEntityAbsolutePacket.setRotation(entity.getBedrockRotation());
-            session.sendUpstreamPacket(moveEntityAbsolutePacket);
+            entity.moveAbsolute(session, entity.getPosition(), entity.getRotation(), entity.isOnGround(), false);
         } else {
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setRuntimeEntityId(entity.getGeyserId());

@@ -77,6 +77,8 @@ public class Entity {
      */
     protected Vector3f rotation;
 
+    private boolean onGround;
+
     protected float scale = 1;
 
     protected EntityType entityType;
@@ -149,11 +151,12 @@ public class Entity {
     }
 
     public void moveRelative(GeyserSession session, double relX, double relY, double relZ, float yaw, float pitch, boolean isOnGround) {
-        moveRelative(session, relX, relY, relZ, Vector3f.from(yaw, pitch, yaw), isOnGround);
+        moveRelative(session, relX, relY, relZ, Vector3f.from(yaw, pitch, this.rotation.getZ()), isOnGround);
     }
 
     public void moveRelative(GeyserSession session, double relX, double relY, double relZ, Vector3f rotation, boolean isOnGround) {
         setRotation(rotation);
+        setOnGround(isOnGround);
         this.position = Vector3f.from(position.getX() + relX, position.getY() + relY, position.getZ() + relZ);
 
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
@@ -172,6 +175,8 @@ public class Entity {
 
     public void moveAbsolute(GeyserSession session, Vector3f position, Vector3f rotation, boolean isOnGround, boolean teleported) {
         setPosition(position);
+        setOnGround(isOnGround);
+        //this.rotation = rotation.add(90f, 0f, 0f);
 
         MoveEntityAbsolutePacket moveEntityPacket = new MoveEntityAbsolutePacket();
         moveEntityPacket.setRuntimeEntityId(geyserId);

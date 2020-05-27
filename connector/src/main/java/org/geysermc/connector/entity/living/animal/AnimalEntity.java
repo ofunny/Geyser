@@ -28,10 +28,23 @@ package org.geysermc.connector.entity.living.animal;
 import com.nukkitx.math.vector.Vector3f;
 import org.geysermc.connector.entity.living.AgeableEntity;
 import org.geysermc.connector.entity.type.EntityType;
+import org.geysermc.connector.network.session.GeyserSession;
 
 public class AnimalEntity extends AgeableEntity {
 
     public AnimalEntity(long entityId, long geyserId, EntityType entityType, Vector3f position, Vector3f motion, Vector3f rotation) {
         super(entityId, geyserId, entityType, position, motion, rotation);
+    }
+
+    @Override
+    public void moveAbsolute(GeyserSession session, Vector3f position, Vector3f rotation, boolean isOnGround, boolean teleported) {
+        if (entityType == EntityType.COW) session.getConnector().getLogger().warning("Moving absolute");
+        super.moveAbsolute(session, position, rotation, isOnGround, teleported);
+    }
+
+    @Override
+    public void moveRelative(GeyserSession session, double relX, double relY, double relZ, Vector3f rotation, boolean isOnGround) {
+        if (entityType == EntityType.COW) session.getConnector().getLogger().error("Moving relative");
+        super.moveRelative(session, relX, relY, relZ, rotation, isOnGround);
     }
 }

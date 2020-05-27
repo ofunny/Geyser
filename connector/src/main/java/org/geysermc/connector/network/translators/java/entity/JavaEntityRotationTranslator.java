@@ -52,15 +52,11 @@ public class JavaEntityRotationTranslator extends PacketTranslator<ServerEntityR
         if (entity.getEntityType() == EntityType.BOAT) {
             entity.setRotation(Vector3f.from(0, 0, packet.getYaw() + 90));
         } else {
-            entity.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), packet.getYaw()));
+            entity.setRotation(Vector3f.from(packet.getYaw(), packet.getPitch(), entity.getRotation().getZ()));
         }
 
         if (entity.getEntityType() != EntityType.PLAYER) {
-            MoveEntityAbsolutePacket moveEntityAbsolutePacket = new MoveEntityAbsolutePacket();
-            moveEntityAbsolutePacket.setRuntimeEntityId(entity.getGeyserId());
-            moveEntityAbsolutePacket.setPosition(entity.getPosition());
-            moveEntityAbsolutePacket.setRotation(entity.getBedrockRotation());
-            session.sendUpstreamPacket(moveEntityAbsolutePacket);
+            entity.moveAbsolute(session, entity.getPosition(), entity.getRotation(), packet.isOnGround(), false);
         } else {
             MovePlayerPacket movePlayerPacket = new MovePlayerPacket();
             movePlayerPacket.setRuntimeEntityId(entity.getGeyserId());
