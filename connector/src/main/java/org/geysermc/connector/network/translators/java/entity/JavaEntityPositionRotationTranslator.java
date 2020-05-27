@@ -25,6 +25,7 @@
 
 package org.geysermc.connector.network.translators.java.entity;
 
+import com.nukkitx.math.vector.Vector3f;
 import org.geysermc.connector.entity.Entity;
 import org.geysermc.connector.entity.type.EntityType;
 import org.geysermc.connector.network.session.GeyserSession;
@@ -47,7 +48,7 @@ public class JavaEntityPositionRotationTranslator extends PacketTranslator<Serve
         if (entity.getEntityType() == EntityType.BOAT) {
             entity.moveRelative(session, packet.getMoveX(), packet.getMoveY(), packet.getMoveZ(), packet.getYaw() + 90, packet.getPitch(), packet.isOnGround());
         } else {
-            entity.moveRelative(session, packet.getMoveX(), packet.getMoveY(), packet.getMoveZ(), packet.getYaw(), packet.getPitch(), packet.isOnGround());
+            entity.moveRelative(session, packet.getMoveX(), packet.getMoveY(), packet.getMoveZ(), Vector3f.from(entity.getRotation().getX(), packet.getPitch(), packet.getYaw()), packet.isOnGround());
         }
     }
 }

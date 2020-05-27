@@ -49,7 +49,7 @@ public class JavaEntityHeadLookTranslator extends PacketTranslator<ServerEntityH
         if (entity == null) return;
 
         if (entity.getEntityType() == session.getTestingEntityType()) System.out.println(getClass().getName());
-        entity.setRotation(Vector3f.from(packet.getHeadYaw(), entity.getRotation().getY(), 0));
+        entity.setRotation(Vector3f.from(packet.getHeadYaw(), entity.getRotation().getY(), entity.getRotation().getZ()));
 
         if (entity.getEntityType() != EntityType.PLAYER && entity.getEntityType() != EntityType.PAINTING) {
             entity.moveAbsolute(session, entity.getPosition(), entity.getRotation(), entity.isOnGround(), false);
