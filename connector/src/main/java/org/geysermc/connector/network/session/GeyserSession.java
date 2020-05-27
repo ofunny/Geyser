@@ -60,6 +60,7 @@ import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.command.CommandSender;
 import org.geysermc.connector.entity.Entity;
 import org.geysermc.connector.entity.PlayerEntity;
+import org.geysermc.connector.entity.type.EntityType;
 import org.geysermc.connector.inventory.PlayerInventory;
 import org.geysermc.connector.network.remote.RemoteServer;
 import org.geysermc.connector.network.session.auth.AuthData;
@@ -167,6 +168,8 @@ public class GeyserSession implements CommandSender {
     private int craftSlot = 0;
 
     private MinecraftProtocol protocol;
+
+    private final EntityType testingEntityType = EntityType.BOAT;
 
     public GeyserSession(GeyserConnector connector, BedrockServerSession bedrockServerSession) {
         this.connector = connector;

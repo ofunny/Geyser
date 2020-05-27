@@ -43,8 +43,9 @@ public class JavaEntityPositionRotationTranslator extends PacketTranslator<Serve
             entity = session.getPlayerEntity();
         }
         if (entity == null) return;
+        if (entity.getEntityType() == session.getTestingEntityType()) System.out.println(getClass().getName());
         if (entity.getEntityType() == EntityType.BOAT) {
-            entity.moveRelative(session, packet.getMoveX(), packet.getMoveY(), packet.getMoveZ(), packet.getYaw() - 90, packet.getPitch(), packet.isOnGround());
+            entity.moveRelative(session, packet.getMoveX(), packet.getMoveY(), packet.getMoveZ(), packet.getYaw() + 90, packet.getPitch(), packet.isOnGround());
         } else {
             entity.moveRelative(session, packet.getMoveX(), packet.getMoveY(), packet.getMoveZ(), packet.getYaw(), packet.getPitch(), packet.isOnGround());
         }

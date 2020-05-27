@@ -43,6 +43,7 @@ public class JavaEntityPositionTranslator extends PacketTranslator<ServerEntityP
         }
         if (entity == null) return;
 
+        if (entity.getEntityType() == session.getTestingEntityType()) System.out.println(getClass().getName());
         entity.moveRelative(session, packet.getMoveX(), packet.getMoveY(), packet.getMoveZ(), entity.getRotation(), packet.isOnGround());
     }
 }

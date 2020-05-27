@@ -51,11 +51,13 @@ public class BoatEntity extends Entity {
     public void moveAbsolute(GeyserSession session, Vector3f position, Vector3f rotation, boolean isOnGround, boolean teleported) {
         // Rotation is basically only called when entering/exiting a boat.
         // We don't include the rotation (y) as it causes the boat to appear sideways
+        session.getConnector().getLogger().warning("Moving absolute");
         super.moveAbsolute(session, position.add(0d, this.entityType.getOffset(), 0d), Vector3f.from(0, 0, rotation.getZ() + 90), isOnGround, teleported);
     }
 
     @Override
     public void moveRelative(GeyserSession session, double relX, double relY, double relZ, Vector3f rotation, boolean isOnGround) {
+        session.getConnector().getLogger().error("Moving relative");
         super.moveRelative(session, relX, relY, relZ, Vector3f.from(0, 0, rotation.getZ()), isOnGround);
     }
 
