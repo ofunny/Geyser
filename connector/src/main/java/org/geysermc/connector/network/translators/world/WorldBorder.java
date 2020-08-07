@@ -32,7 +32,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.geysermc.common.ChatColor;
+import org.geysermc.connector.common.ChatColor;
 import org.geysermc.connector.entity.Entity;
 import org.geysermc.connector.entity.PlayerEntity;
 import org.geysermc.connector.network.session.GeyserSession;
@@ -60,6 +60,10 @@ public class WorldBorder {
     private double maxZ;
 
     public void onTick(GeyserSession session) {
+        if (session.isClosed()) {
+            worldBorderTask.cancel(false);
+            return;
+        }
         PlayerEntity player = session.getPlayerEntity();
         if(isNearEdge(player)) {
             session.sendActionBar(ChatColor.BOLD + "" + ChatColor.RED + "You are near the world border (" + (int) getDistanceToEdge(player) + " blocks)");
