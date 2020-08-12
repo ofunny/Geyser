@@ -69,7 +69,7 @@ import org.geysermc.connector.network.translators.BiomeTranslator;
 import org.geysermc.connector.network.translators.EntityIdentifierRegistry;
 import org.geysermc.connector.network.translators.PacketTranslatorRegistry;
 import org.geysermc.connector.network.translators.item.ItemRegistry;
-import org.geysermc.connector.network.translators.world.WorldBorder;
+import org.geysermc.connector.network.translators.world.border.WorldBorder;
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
 import org.geysermc.connector.utils.*;
 import org.geysermc.floodgate.util.BedrockData;
@@ -128,7 +128,12 @@ public class GeyserSession implements CommandSender {
 
     @Setter
     private boolean spawned;
-    private boolean closed;
+    /*
+     * For now I just share some members across threads (read only).
+     * Tha's why volatile is in use here, as soon as that event thing comes out we talked about,
+     * we could consider to split it up in a clean manner, but for now that's the smoothest way.
+     */
+    private volatile boolean closed;
 
     @Setter
     private GameMode gameMode = GameMode.SURVIVAL;
@@ -471,16 +476,60 @@ public class GeyserSession implements CommandSender {
         upstream.sendPacket(textPacket);
     }
 
-    public void sendActionBar(String text) {
+    /*
+     * Show a action bar to the client.
+     */
+    public void showActionBar(String text, int stayTime, int fadeInTime, int fadeOutTime) {
         SetTitlePacket setTitlePacket = new SetTitlePacket();
         setTitlePacket.setType(SetTitlePacket.Type.ACTIONBAR);
         setTitlePacket.setText(text);
-        setTitlePacket.setFadeInTime(0);
-        setTitlePacket.setStayTime(0);
-        setTitlePacket.setFadeOutTime(0);
-
+        setTitlePacket.setStayTime(stayTime);
+        setTitlePacket.setFadeInTime(fadeInTime);
+        setTitlePacket.setFadeOutTime(fadeOutTime);
         upstream.sendPacket(setTitlePacket);
-    }
+    }// end sendActionBar
+
+    public void showActionBar(String text, int stayTime) {
+        showActionBar(text, stayTime, 5, 5);
+    }// sendActionBar
+
+    public void showActionBar(String text) {
+        showActionBar(text, 10);
+    }// sendActionBar
+
+    /*
+     * Legacy support for old method with the old settings.
+     */
+    public void sendActionBar(String text) {
+        showActionBar(text, 0, 0, 0);
+    }// sendActionBar
+
+    /*
+     * Plays a sound at a given location.
+     * Providing a similar parameter structure than the equivalent in the Spigot/Paper API.
+     */
+    public void playSound(Vector3f position, String sound, float volume, float pitch) {
+        PlaySoundPacket playSoundPacket = new PlaySoundPacket();
+        playSoundPacket.setSound(sound);
+        playSoundPacket.setPosition(position);
+        playSoundPacket.setVolume(volume);
+        playSoundPacket.setPitch(pitch);
+        upstream.sendPacket(playSoundPacket);
+    }// end playSound
+
+    /*
+     * Spawning particle at a given location
+     */
+    public void spawnParticle(Vector3f position, LevelEventType particle, int count, int data) {
+        LevelEventPacket effectPacket = new LevelEventPacket();
+        effectPacket.setPosition(position);
+        effectPacket.setType(particle);
+        effectPacket.setData(data);
+        for (int i = 0; i < count; i++) {
+            upstream.sendPacket(effectPacket);
+        }// end for
+    }// end spawnParticle
+
 
     @Override
     public boolean isConsole() {
